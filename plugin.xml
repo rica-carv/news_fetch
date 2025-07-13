@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<e107Plugin name="News Fetch" version="2.3" date="2025-06-29" category="content" pluginUrl="https://exemplo.com" pluginEmail="contato@exemplo.com" description="Importa automaticamente notícias de fontes externas (RSS ou scraping).">
+  
+  <author>rica_carv &amp; ChatGPT</author>
+  <folder>news_fetch</folder>
+  <compatibility>2.3</compatibility>
+
+  <icon>news_fetch/images/icon.png</icon>
+
+  <prefs>
+    <pref name="sources" type="array" />
+  </prefs>
+
+<admin>
+  <menuTitle>News Fetch</menuTitle>
+  <page>admin_config.php</page>
+</admin>
+
+  <site>e_module.php</site>
+
+  <languages>
+    <language name="English" file="languages/English.php" />
+    <language name="Portuguese" file="languages/Portuguese.php" />
+  </languages>
+
+  <install_required>false</install_required>
+  <installer>
+    <step>plugin_installer.php</step>
+  </installer>
+
+</e107Plugin>
