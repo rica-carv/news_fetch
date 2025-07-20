@@ -28,4 +28,13 @@
     <step>plugin_installer.php</step>
   </installer>
 
+<cronList>
+    <cron>
+        <function>news_fetch</function>
+        <file>e_cron.php</file>
+        <category>content</category>
+        <description>Importa conteúdos de fontes RSS ou scraping configuradas no plugin.</description>
+    </cron>
+</cronList>
+
 </e107Plugin>

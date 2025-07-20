@@ -99,9 +99,12 @@ class news_fetch_admin_dispatcher extends e_admin_dispatcher
     protected $adminMenu = [
         'main/list'   => ['caption' => 'Fontes',          'perm' => 'P'],
         'main/create' => ['caption' => 'Adicionar Fonte', 'perm' => 'P'],
+        'divider1'     => ['divider' => true],
         'import/main' => ['caption' => 'Importar agora',  'perm' => 'P'],
-        'divider'     => ['divider' => true],
-        'log/list'    => ['caption' => 'Logs',            'perm' => 'P']
+        'divider2'     => ['divider' => true],
+        'main/prefs' => ['caption' => 'Preferências', 'perm' => 'P'],
+        'divider3'   => ['divider' => true],
+        'log/list'    => ['caption' => 'Logs',            'perm' => 'P'],
     ];
 
 	public function init()
@@ -119,12 +122,21 @@ class news_fetch_admin_ui extends e_admin_ui
     protected $table	    = 'news_fetch';
 
     protected $pid				= 'id';
-    protected $prefs       = [];
     protected $perPage     = 10;
     protected $batchDelete		= true;
     protected $batchCopy		= true;		
    protected $defaultOrderField = 'src_name';
    protected $defaultOrder = 'asc';
+
+       // ✅ Preferências globais do plugin (armazenadas em e107_prefs)
+       protected $prefs = [
+        'use_module_fallback' => [
+            'title' => 'Usar fallback via e_module.php',
+            'type'  => 'boolean',
+            'data'  => 'int',
+            'help'  => 'Se ativado, permite que o plugin corra via e_module.php caso o cron do servidor não esteja ativo.'
+        ]
+    ];
 
     protected $fields = [
         'id' =>   array ( 'title' => LAN_ID, 'data' => 'int', 'width' => '5%', 'class' => 'left', 'thclass' => 'left', 'filter' => true),
@@ -219,12 +231,21 @@ class news_fetch_admin_ui extends e_admin_ui
             'data'  => 'int',
             'width' => 'auto'
         ],
+        'src_submit_pending' => [
+    'title' => "Requer aprovação?",
+    'type' => 'boolean',
+    'data' => 'int',
+    'help' => "Se ativo, a notícia será guardada como submissão pendente (tabela submitnews).",
+    'width' => 'auto',
+    'thclass' => 'left',
+    'class' => 'left'
+],
         'options' =>   array ( 'title' => LAN_OPTIONS, 'type' => null, 'data' => null, 'width' => '10%', 'thclass' => 'center last', 'class' => 'center last', 'forced' => '1',  ),
 
     ];
 
 //    protected $fieldpref = ['src_name', 'src_url', 'src_cat', 'src_active', 'src_xpath_link', 'src_xpath_title', 'src_xpath_body', 'src_xpath_img', 'src_img2media'];
-    protected $fieldpref = ['src_name', 'src_url', 'src_cat', 'src_active'];
+    protected $fieldpref = ['src_name', 'src_url', 'src_cat', 'src_active', 'src_submit_pending'];
     
     public function init()
     {
@@ -314,6 +335,7 @@ public function onUpdateError($new_data, $old_data, $id)
             <th>Nome</th>
             <th>URL</th>
             <th>Categoria</th>
+            <th>Ultima importação</th>
         </tr></thead><tbody>';
 
         foreach ($sources as $row)
@@ -325,6 +347,7 @@ public function onUpdateError($new_data, $old_data, $id)
             $text .= "<td>" . $tp->toHTML($row['src_name']) . "</td>";
             $text .= "<td><a href='".$row['src_url']."' target='_blank'>" . $tp->toHTML($row['src_url']) . "</a></td>";
             $text .= "<td>" . $tp->toHTML($catName) . "</td>";
+            $text .= "<td>" . $tp->toDate($row['src_last_run'], 'long') . "</td>";
             $text .= "</tr>";
         }
 
@@ -347,7 +370,9 @@ public function onUpdateError($new_data, $old_data, $id)
         $selected = array_keys($_POST['import'] ?? []);
         $count = 0;
 
-        require_once(e_PLUGIN.'news_fetch/e_module.php');
+        require_once(e_PLUGIN.'news_fetch/e_cron.php');
+        $cron = new news_fetch_cron;
+        $cron->news_fetch();
 
         foreach ($selected as $id)
         {

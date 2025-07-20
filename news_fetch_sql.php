@@ -10,6 +10,7 @@ CREATE TABLE news_fetch (
   src_last_run int(8) unsigned;
   src_cat tinyint(1) NOT NULL,
   src_active tinyint(1) NOT NULL,
+  src_submit_pending tinyint(1) NOT NULL,
   PRIMARY KEY (id),
   KEY id (id)
 ) ENGINE=InnoDB;
