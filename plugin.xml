@@ -7,9 +7,10 @@
 
   <icon>news_fetch/images/icon.png</icon>
 
-  <prefs>
-    <pref name="sources" type="array" />
-  </prefs>
+<prefs>
+  <pref name="use_module_fallback" type="boolean" default="0" />
+  <pref name="cron_interval" type="number" default="3600" />
+</prefs>
 
 <admin>
   <menuTitle>News Fetch</menuTitle>

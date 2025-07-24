@@ -26,7 +26,7 @@ class news_fetch_cron
             'function'    => "news_fetch", // método que irá correr
             'category'    => 'content',    // categoria para o admin
             'description' => "Importa conteúdos de fontes RSS ou scraping definidas em 'news_fetch'.",
-            'interval'    => 3600  // em segundos (opcional, mas recomendado)
+            'interval'    => e107::pref('news_fetch', 'cron_interval', 3600)  // em segundos (opcional, mas recomendado)
         ];
     
         return $cron;

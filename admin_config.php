@@ -135,7 +135,13 @@ class news_fetch_admin_ui extends e_admin_ui
             'type'  => 'boolean',
             'data'  => 'int',
             'help'  => 'Se ativado, permite que o plugin corra via e_module.php caso o cron do servidor não esteja ativo.'
-        ]
+        ],
+        'cron_interval' => [
+            'title' => 'Intervalo do cron (segundos)',
+            'type'  => 'number',
+            'help'  => 'Intervalo em segundos entre execuções do cron (por ex. 3600 para 1 hora)',
+            'writeParms' => ['pattern' => '[0-9]+']
+        ],
     ];
 
     protected $fields = [
@@ -259,7 +265,7 @@ class news_fetch_admin_ui extends e_admin_ui
 ///            return $opts;
 
             $this->fields['src_cat']['writeParms'] = $opts;
-
+            
             e107::js('footer', e_PLUGIN_ABS.'news_fetch/js/news_fetch.js');
             e107::css('inline', '.input-2xxlarge {width:85% !important;}');
 
@@ -400,13 +406,13 @@ class news_fetch_log_ui extends e_admin_ui
         $tp  = e107::getParser();
 
         $text = "<h4>Últimos logs de importação (news_fetch)</h4>";
-        $text .= "<div class='adminlist' style='max-height:400px; overflow:auto;'>";
+        $text .= "<div class='adminlist' style='max-height:50em; overflow:auto;'>";
 
         $qry = "
             SELECT * FROM #admin_log
             WHERE dblog_eventcode = 'news_fetch'
             ORDER BY dblog_datestamp DESC
-            LIMIT 50
+            LIMIT 100
         ";
 
         if ($sql->gen($qry)) {

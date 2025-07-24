@@ -3,6 +3,18 @@ if (!defined('e107_INIT')) { exit; }
 
 class news_fetch_helper
 {
+/*    
+    protected $log;
+    protected $logEventCode; 
+
+    public function __construct($eventCode  = 'news_fetch') // padrão
+    {
+        $this->log = e107::getLog();
+//        if ($eventCode) {
+            $this->logEventCode = $eventCode;
+//        }
+    }
+*/    
     /**
      * Verifica se a URL parece ser um RSS.
      */
@@ -87,8 +99,10 @@ class news_fetch_helper
     /**
      * Regista uma entrada no log do sistema do e107.
      */
+/*
     public static function log($msg, $type = 'NOTICE')
     {
-        e107::getLog()->add('news_fetch', $msg, $type);
+        e107::getLog()->add("gnfdng", $msg, $type);
     }
+*/   
 }

@@ -7,7 +7,7 @@ if (!defined('e107_INIT')) {
 // Apenas executa se a preferência estiver ativa
 $prefs = e107::pref('news_fetch');
 
-if (!empty($prefs['use_module_fallback'])) {
+if (!empty(e107::pref('news_fetch', 'use_module_fallback'))) {
     e107::getLog()->add('news_fetch', 'Execução via e_module.php (fallback cron)', E_LOG_INFORMATIVE);
 
     require_once(e_PLUGIN . 'news_fetch/e_cron.php'); // Reutiliza a mesma classe cron
