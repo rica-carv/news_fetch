@@ -6,6 +6,7 @@ CREATE TABLE news_fetch (
   src_xpath_title VARCHAR(255) DEFAULT NULL,
   src_xpath_body VARCHAR(255) DEFAULT NULL,
   src_xpath_img VARCHAR(255) DEFAULT NULL,
+  src_xpath_date VARCHAR(255) DEFAULT NULL,
   src_last_url VARCHAR(255) DEFAULT NULL,
   src_last_run int(8) unsigned,
   src_last_date INT(10) UNSIGNED DEFAULT NULL,
