@@ -164,7 +164,6 @@ trait news_fetch_admin_common_fields
             'class'   => 'left',
             'thclass' => 'left'
         ],
-
         'src_xpath_date' => [
             'title' => 'XPath da Data<br><span class="label label-primary">Deixe em branco para colocar a data actual do sistema</span>',
             'type'  => 'text',
@@ -489,7 +488,7 @@ class news_fetch_admin_ui extends e_admin_ui
                     'thclass' => 'left',
                     'class' => 'left'
                 ],
-                'src_last_run' => [
+/*                'src_last_run' => [
                     'title' => 'Última Data execução',
                     'type'  => 'datestamp',
                     'data'  => 'int',
@@ -504,6 +503,24 @@ class news_fetch_admin_ui extends e_admin_ui
                     'readParms' => ['format' => 'long'],
                     'help'  => 'Data mais recente obtida da fonte.'
                 ],
+*/
+// No init() ou no array de $this->fields, altera assim:
+'src_last_run' => [
+    'title'   => 'Última Execução',
+    'type'    => 'method',
+    'width'   => 'auto',
+    'thclass' => 'center',
+    'class'   => 'left'
+],
+
+'src_last_date' => [
+    'title'   => 'Última Data Extraída',
+    'type'    => 'method',
+    'width'   => 'auto',
+    'thclass' => 'center',
+    'class'   => 'left'
+],
+
                 'options' => [
                     'title' => LAN_OPTIONS,
                     'type' => null,
@@ -521,6 +538,8 @@ class news_fetch_admin_ui extends e_admin_ui
 
     public function init()
     {
+//        $this->fields['src_last_run']['writeParms'] = "post=sdalkdçaskdçskd";
+
         $db = e107::getDb();
         $cats = $db->retrieve('news_category', '*', 'ORDER BY category_name ASC', true);
             $opts = [];
@@ -586,9 +605,9 @@ class news_fetch_admin_ui extends e_admin_ui
     ")->setClose(true, E_MESSAGE_INFO);
 
             }
-        
-           e107::js('footer', e_PLUGIN_ABS.'news_fetch/js/news_fetch.js');
-           e107::css('inline', '.input-2xxlarge {width:85% !important;}');
+            
+            e107::js('footer', e_PLUGIN_ABS.'news_fetch/js/news_fetch.js');
+            e107::css('inline', '.input-2xxlarge {width:85% !important;}');
 
 /*
     // Detecta modo create de forma simples (funciona com o admin dispatcher padrão)
@@ -608,6 +627,43 @@ class news_fetch_admin_ui extends e_admin_ui
 */
 
     }
+/*
+    public function render_status($row)
+{
+    $tp = e107::getParser();
+
+    $lastRun  = !empty($row['src_last_run'])  
+        ? $tp->toDate($row['src_last_run'], 'short') 
+        : 'Nunca';
+    $lastDate = !empty($row['src_last_date']) 
+        ? $tp->toDate($row['src_last_date'], 'short') 
+        : '—';
+
+    $icon  = "<i class='fa fa-clock-o'></i>";
+    $color = 'text-muted';
+
+    if (!empty($row['src_last_run'])) {
+        $diffHours = (time() - $row['src_last_run']) / 3600;
+        if ($diffHours < 1) {
+            $color = 'text-success';
+            $icon  = "<i class='fa fa-check-circle'></i>";
+        } elseif ($diffHours < 24) {
+            $color = 'text-warning';
+            $icon  = "<i class='fa fa-exclamation-circle'></i>";
+        } else {
+            $color = 'text-danger';
+            $icon  = "<i class='fa fa-times-circle'></i>";
+        }
+    }
+
+    return "<div class='{$color}'>
+                {$icon} <strong>{$lastRun}</strong><br>
+                <small>{$lastDate}</small>
+            </div>";
+}
+*/
+
+
     // ------- Customize Create --------
 
     public function beforeCreate($new_data, $old_data)
@@ -640,10 +696,60 @@ public function onUpdateError($new_data, $old_data, $id)
 {
     // do something		
 }	
+
 }
 class news_fetch_form_ui extends e_admin_form_ui
     {
-    }
+        public function src_last_run($curVal,$mode)
+        {
+        //    $tp = e107::getParser();
+        
+            $lastRun = !empty($curVal)
+                ? e107::getParser()->toDate($curVal, 'short')
+                : 'Nunca';
+        
+            $age = !empty($curVal) ? (time() - $curVal) : null;
+
+/*            
+            Human-readable time 	Seconds
+            1 hour	3600 seconds
+            1 day	86400 seconds
+            1 week	604800 seconds
+            1 month (30.44 days) 	2629743 seconds
+            1 year (365.24 days) 	 31556926 seconds
+*/
+            if ($age === null) {
+                $iconClass = 'fa-clock-o';
+                $colorClass = 'text-muted';
+            } elseif ($age < 604800 ) { // 1 semana
+                $iconClass = 'fa-check-circle';
+                $colorClass = 'text-success';
+            } elseif ($age < 2629743) { // 1 mês
+                $iconClass = 'fa-exclamation-circle';
+                $colorClass = 'text-warning';
+            } else {
+                $iconClass = 'fa-times-circle';
+                $colorClass = 'text-danger';
+            }
+        
+            return "<span class='{$colorClass}' style='white-space:nowrap;'>
+                        <i class='fa {$iconClass}' aria-hidden='true'></i> {$lastRun}
+                    </span>";
+        }
+        
+        public function src_last_date($curVal,$mode)
+        {
+        //    $tp = e107::getParser();
+        
+            $lastDate = !empty($curVal)
+                ? e107::getParser()->toDate($curVal, 'short')
+                : '—';
+        
+            return "<span class='text-info' style='white-space:nowrap;'>
+                        <i class='fa fa-calendar' aria-hidden='true'></i> {$lastDate}
+                    </span>";
+        }
+        }
    
 class news_fetch_import_ui extends e_admin_ui
 {

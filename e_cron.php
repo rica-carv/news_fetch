@@ -34,7 +34,7 @@ class news_fetch_cron
 
     public function news_fetch($rowdata = null)
     {
-//        var_dump ($rowdata);
+        var_dump ($rowdata);
 
         $rows = $rowdata ? array($rowdata) : $this->db->retrieve('news_fetch', '*', 'src_active=1', true);
 //        var_dump ($rows);
@@ -195,6 +195,7 @@ if (!empty($row['src_xpath_date'])) {
 //            var_dump ($row);
 
             $lastresult=$this->submitNews($row);
+            var_dump($lastresult);
             }
         }
     }
