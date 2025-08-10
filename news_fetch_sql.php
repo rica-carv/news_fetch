@@ -4,10 +4,11 @@ CREATE TABLE news_fetch (
   src_url varchar(200) NOT NULL,
   src_xpath_link VARCHAR(255) DEFAULT NULL,
   src_xpath_title VARCHAR(255) DEFAULT NULL,
-  src_xpath_body VARCHAR(255) DEFAULT NULL;
-  src_xpath_img VARCHAR(255) DEFAULT NULL;
-  src_last_url VARCHAR(255) DEFAULT NULL;
-  src_last_run int(8) unsigned;
+  src_xpath_body VARCHAR(255) DEFAULT NULL,
+  src_xpath_img VARCHAR(255) DEFAULT NULL,
+  src_last_url VARCHAR(255) DEFAULT NULL,
+  src_last_run int(8) unsigned,
+  src_last_date INT(10) UNSIGNED DEFAULT NULL,
   src_cat tinyint(1) NOT NULL,
   src_active tinyint(1) NOT NULL,
   src_submit_pending tinyint(1) NOT NULL,

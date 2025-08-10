@@ -49,35 +49,53 @@ class news_fetch_helper
         return $scheme . '://' . $host . $port . $basePath . $relative;
     }
 
-    /**
-     * Aplica uma expressão XPath e retorna o texto encontrado.
-     */
-    public static function apply_xpath($html, $xpathQuery, $asHtml = false)
-    {
-        $xpathQuery = html_entity_decode($xpathQuery);
-    
-        libxml_use_internal_errors(true);
-        $dom = new DOMDocument();
-        $dom->loadHTML('<?xml encoding="UTF-8">' . $html);
-        $xpath = new DOMXPath($dom);
-    
-        if ($asHtml) {
-            // Obter o primeiro nó correspondente
-            $nodeList = $xpath->query($xpathQuery);
-            if ($nodeList->length === 0) return '';
-    
-            $innerHTML = '';
-            foreach ($nodeList as $node) {
-                foreach ($node->childNodes as $child) {
-                    $innerHTML .= $dom->saveHTML($child);
-                }
-            }
-            return trim($innerHTML);
-        }
-    
-        // Modo padrão (apenas texto)
-        return trim($xpath->evaluate("string({$xpathQuery})"));
+/**
+ * Aplica uma expressão XPath e retorna o(s) resultado(s).
+ *
+ * @param string $html        HTML bruto.
+ * @param string $xpathQuery  Expressão XPath.
+ * @param bool   $asHtml      Se verdadeiro, retorna HTML interno dos nós.
+ * @param bool   $alwaysArray Se verdadeiro, retorna sempre array, mesmo com 1 resultado.
+ * @return string|array
+ */
+public static function apply_xpath($html, $xpathQuery, $asHtml = false)
+{
+    $xpathQuery = html_entity_decode($xpathQuery);
+
+    libxml_use_internal_errors(true);
+    $dom = new DOMDocument();
+    $dom->loadHTML('<?xml encoding="UTF-8">' . $html);
+    $xpath = new DOMXPath($dom);
+
+    $nodes = $xpath->query($xpathQuery);
+
+    if ($nodes === false || $nodes->length === 0) {
+        return $asHtml ? '' : '';
     }
+
+    $result = [];
+    // Modo HTML
+    if ($asHtml) {
+        foreach ($nodes as $node) {
+            $innerHTML = '';
+            foreach ($node->childNodes as $child) {
+                $innerHTML .= $dom->saveHTML($child);
+            }
+            $result[] = trim($innerHTML);
+        }
+
+////        return count($result) === 1 ? $result[0] : $result;
+    }
+
+    // Modo texto (atributo ou texto)
+//    $result = [];
+    foreach ($nodes as $node) {
+        $result[] = trim($node->nodeValue);
+    }
+
+    return $result;
+}
+
 
     /**
      * Obtem conteúdo remoto com timeout e validação.
@@ -105,4 +123,56 @@ class news_fetch_helper
         e107::getLog()->add("gnfdng", $msg, $type);
     }
 */   
+public static function parseDate($rawDate)
+{
+    if (empty($rawDate)) {
+        return time(); // default para agora
+    }
+
+    $rawDate = trim($rawDate);
+
+    if (preg_match('/hoje|today/i', $rawDate)) {
+        return strtotime('today');
+    }
+    if (preg_match('/ontem|yesterday/i', $rawDate)) {
+        return strtotime('yesterday');
+    }
+
+    // Normalizar meses em português e inglês
+    $meses = [
+        'janeiro'=>'January','fevereiro'=>'February','março'=>'March','abril'=>'April',
+        'maio'=>'May','junho'=>'June','julho'=>'July','agosto'=>'August',
+        'setembro'=>'September','outubro'=>'October','novembro'=>'November','dezembro'=>'December',
+        'jan'=>'Jan','fev'=>'Feb','mar'=>'Mar','abr'=>'Apr','mai'=>'May','jun'=>'Jun',
+        'jul'=>'Jul','ago'=>'Aug','set'=>'Sep','out'=>'Oct','nov'=>'Nov','dez'=>'Dec'
+    ];
+    $rawDate = str_ireplace(array_keys($meses), array_values($meses), $rawDate);
+
+    // Tentar alguns formatos comuns
+    $formatos = [
+        'Y-m-d H:i:s',
+        'Y-m-d H:i',
+        'd-m-Y H:i:s',
+        'd-m-Y H:i',
+        'd/m/Y H:i',
+        'd/m/Y',
+        'M d, Y H:i',
+        'M d, Y',
+        'd M Y',
+        'd M Y H:i',
+        'l, d M Y H:i', // segunda-feira, 29 Jul 2025 12:34
+    ];
+
+    foreach ($formatos as $formato) {
+        $dt = \DateTime::createFromFormat($formato, $rawDate);
+        if ($dt) {
+            return $dt->getTimestamp();
+        }
+    }
+
+    // Fallback para strtotime
+    $ts = strtotime($rawDate);
+    return $ts ?: time();
+}
+
 }
