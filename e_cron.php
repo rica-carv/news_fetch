@@ -34,8 +34,6 @@ class news_fetch_cron
 
     public function news_fetch($rowdata = null)
     {
-        var_dump ($rowdata);
-
         $rows = $rowdata ? array($rowdata) : $this->db->retrieve('news_fetch', '*', 'src_active=1', true);
 //        var_dump ($rows);
 

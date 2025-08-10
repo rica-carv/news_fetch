@@ -209,9 +209,9 @@ class news_fetch_admin_dispatcher extends e_admin_dispatcher
         'import' => [
             'controller' => 'news_fetch_import_ui',
         ],
-        'manual_import' => [
-            'controller' => 'news_fetch_manual_import_ui',
-            'ui'         => 'news_fetch_manual_import_form_ui'
+        'manual' => [
+            'controller' => 'news_fetch_manual_ui',
+            'ui'         => 'news_fetch_manual_form_ui'
         ],
         'log' => [
             'controller' => 'news_fetch_log_ui',
@@ -226,7 +226,7 @@ class news_fetch_admin_dispatcher extends e_admin_dispatcher
         'main/create' => ['caption' => 'Adicionar Fonte', 'perm' => 'P'],
         'divider1'     => ['divider' => true],
         'import/main' => ['caption' => 'Importar site agora',  'perm' => 'P'],
-        'manual_import/create' => ['caption' => 'Importação Manual', 'perm' => 'P'],
+        'manual/create' => ['caption' => 'Importação Manual', 'perm' => 'P'],
         'divider2'     => ['divider' => true],
         'main/prefs' => ['caption' => 'Preferências', 'perm' => 'P'],
         'divider3'   => ['divider' => true],
@@ -506,7 +506,7 @@ class news_fetch_admin_ui extends e_admin_ui
 */
 // No init() ou no array de $this->fields, altera assim:
 'src_last_run' => [
-    'title'   => 'Última Execução',
+    'title'   => 'Ultima importação',
     'type'    => 'method',
     'width'   => 'auto',
     'thclass' => 'center',
@@ -812,7 +812,7 @@ class news_fetch_import_ui extends e_admin_ui
 
         return $text;
     }
-/*
+
     public function scanPage()
     {
         $msg = e107::getMessage();
@@ -840,7 +840,7 @@ class news_fetch_import_ui extends e_admin_ui
         $msg->addInfo("Importação concluída: $count fontes processadas.");
         return true;
     }
-    */
+
 }
 
 /*
@@ -978,7 +978,7 @@ class news_fetch_manual_import_ui extends e_admin_ui
 }
 */
 
-class news_fetch_manual_import_ui extends e_admin_ui
+class news_fetch_manual_ui extends e_admin_ui
 {
     use news_fetch_admin_common_fields;
 
@@ -1276,6 +1276,8 @@ JS);
         ];
 
 //        $runner = new news_fetch_cron;
+
+
         if (!empty($result = (new news_fetch_cron)->news_fetch($row))){
             if ($result['type'] === 'news') {
                 $url = e_ADMIN."newspost.php?action=edit&id={$result['id']}";
@@ -1284,7 +1286,7 @@ JS);
             }
             e107::getMessage()->addSuccess("Notícia criada com sucesso: <a href='{$url}' target='_blank'>Editar notícia</a>");
         }
-//        var_dump ($temp);
+        //        var_dump ($temp);
 /*        list($type, $id) = $runner->news_fetch($row); 
         
 //        var_dump ($type);
@@ -1312,7 +1314,7 @@ JS);
 }
 
 
-class news_fetch_manual_import_form_ui extends e_admin_form_ui
+class news_fetch_manual_form_ui extends e_admin_form_ui
     {
     }
 
