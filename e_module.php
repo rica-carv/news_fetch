@@ -13,7 +13,6 @@ if (!defined('e107_INIT')) {
 if (!empty(e107::pref('news_fetch', 'use_module_fallback'))) {
     e107::getLog()->add('news_fetch', 'Execução via e_module.php (fallback cron)', E_LOG_INFORMATIVE);
 
-    require_once(e_PLUGIN . 'news_fetch/e_cron.php'); // Reutiliza a mesma classe cron
 //    require_once(e_HANDLER . 'pref_class.php');
 
 //define('NEWSFETCH_INTERVAL', 3600); // Tempo mínimo entre execuções (em segundos)
@@ -25,7 +24,13 @@ if (!empty(e107::pref('news_fetch', 'use_module_fallback'))) {
 //$lastRow = e107::getDb()->retrieve('news_fetch', 'MAX(src_last_run) AS last_run', '');
 $lastRun = (int) (e107::getDb()->retrieve('news_fetch', 'MAX(src_last_run) AS last_run', '')['last_run'] ?? 0);
 
-if (time() - $lastRun > 3600) { // Tempo mínimo entre execuções (em segundos)
+//var_dump(time()); // Tempo mínimo entre execuções (em segundos)
+//var_dump($lastRun); // Tempo mínimo entre execuções (em segundos)
+//var_dump(time() - $lastRun); // Tempo mínimo entre execuções (em segundos)
+//var_dump(time() - $lastRun > 86400); // Tempo mínimo entre execuções (em segundos)
+
+if (time() - $lastRun > 86400) { // Tempo mínimo entre execuções (em segundos)
+    require_once(e_PLUGIN . 'news_fetch/e_cron.php'); // Reutiliza a mesma classe cron
     // Atualiza a preferência com o novo timestamp
     //    $pref->set(NEWSFETCH_PREF_KEY, time());
 //    $pref->save(false, true, true); // (no-cache, override, force-write)

@@ -39,6 +39,7 @@ class news_fetch_cron
 
         foreach ($rows as $row) {
 //            var_dump ($row);
+//            echo "<hr>";
             //            $this->processRow($row);
 //        }
 //    }
@@ -245,7 +246,7 @@ $this->db->update(
         $news = [
             'news_title'     => $row['title'],
             'news_body'      => $row['body'],
-            'news_datestamp' => $row['datestamp'] ?: time(),
+            'news_datestamp' => $row['datestamp'] ?? time(),
             'news_author'    => USERID ?: 1,
             'news_category'  => (int) $row['src_cat'],
             'news_class'     => 255

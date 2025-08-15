@@ -759,6 +759,12 @@ class news_fetch_import_ui extends e_admin_ui
 
     public function MainPage()
     {
+    // Se clicaram no botão "Importar", processa já
+    if (!empty($_POST['scan']))
+    {
+        $this->scanPage();
+    }
+    
         $frm = e107::getForm();
         $tp  = e107::getParser();
         $db  = e107::getDb();
@@ -776,8 +782,12 @@ class news_fetch_import_ui extends e_admin_ui
             $cats[$c['category_id']] = $c['category_name'];
         }
 
+//        $text = "<div><div id='results-container'></div>
+//        <form action='".e_SELF."' method='post' id='scanform'>";
+        $formUrl = e_PLUGIN."news_fetch/admin_config.php?mode=import&action=main"; 
         $text = "<div><div id='results-container'></div>
-        <form action='".e_SELF."' method='post' id='scanform'>";
+        <form action='{$formUrl}' method='post' id='scanform'>";
+
 
         $text .= '<table class="table adminform table-striped">';
         $text .= '<thead><tr>
@@ -815,29 +825,32 @@ class news_fetch_import_ui extends e_admin_ui
 
     public function scanPage()
     {
-        $msg = e107::getMessage();
-        $db  = e107::getDb();
+//        $msg = e107::getMessage();
+//        $db  = e107::getDb();
         $selected = array_keys($_POST['import'] ?? []);
         $count = 0;
 
         require_once(e_PLUGIN.'news_fetch/e_cron.php');
         $cron = new news_fetch_cron;
-        $cron->news_fetch();
+//        $cron->news_fetch();
 
+//VAr_dump($selected);
+//VAr_dump($_POST);
         foreach ($selected as $id)
         {
-            $row = $db->retrieve('news_fetch', '*', 'id='.(int)$id, true);
-            if (empty($row)) continue;
+            $row = e107::getDb()->retrieve('news_fetch', '*', 'id='.(int)$id, true, null, true);
+//VAr_dump($row);
+if (empty($row)) continue;
 
 //                $url = $row['src_url'];
 //                $cat = $row['src_cat'];
             
-                if (news_fetch_import($row)) {
+                if ($cron->news_fetch($row[0])) {
                     $count++;
                 }
         }
 
-        $msg->addInfo("Importação concluída: $count fontes processadas.");
+        e107::getMessage()->addInfo("Importação concluída: $count fontes processadas.");
         return true;
     }
 
