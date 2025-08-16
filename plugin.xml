@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<e107Plugin name="News Fetch" version="2.3" date="2025-06-29" category="content" pluginUrl="https://exemplo.com" pluginEmail="contato@exemplo.com" description="Importa automaticamente notícias de fontes externas (RSS ou scraping).">
+<e107Plugin name="News Fetch" version="2.5" date="2025-08-16" category="content" pluginUrl="https://exemplo.com" pluginEmail="contato@exemplo.com" description="Importa automaticamente notícias de fontes externas (RSS ou scraping).">
   
   <author>rica_carv &amp; ChatGPT</author>
   <folder>news_fetch</folder>

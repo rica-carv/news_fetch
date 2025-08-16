@@ -477,7 +477,8 @@ class news_fetch_admin_ui extends e_admin_ui
                     'title' => 'Ativo',
                     'type'  => 'boolean',
                     'data'  => 'int',
-                    'width' => 'auto'
+                    'width' => 'auto',
+                    'writeParms' => ['label' => 'yesno']
                 ],
                 'src_submit_pending' => [
                     'title' => "Requer aprovação?",
@@ -486,7 +487,8 @@ class news_fetch_admin_ui extends e_admin_ui
                     'help' => "Se ativo, a notícia será guardada como submissão pendente.",
                     'width' => 'auto',
                     'thclass' => 'left',
-                    'class' => 'left'
+                    'class' => 'left',
+                    'writeParms' => ['label' => 'yesno']
                 ],
 /*                'src_last_run' => [
                     'title' => 'Última Data execução',
@@ -512,7 +514,6 @@ class news_fetch_admin_ui extends e_admin_ui
     'thclass' => 'center',
     'class'   => 'left'
 ],
-
 'src_last_date' => [
     'title'   => 'Última Data Extraída',
     'type'    => 'method',
@@ -520,7 +521,28 @@ class news_fetch_admin_ui extends e_admin_ui
     'thclass' => 'center',
     'class'   => 'left'
 ],
-
+// ...no array de campos da fonte...
+'src_import_type' => [
+    'title' => 'Tipo de importação',
+    'type'  => 'dropdown',
+    'data'  => 'str',
+    'width' => 'auto',
+    'writeParms' => [
+        'optArray' => [
+            1 => 'Notícia completa',
+            0   => 'Resumo'
+        ]
+    ],
+    'help' => 'Escolha se deseja importar o texto completo ou apenas um resumo.'
+],
+'src_show_link' => [
+    'title' => 'Mostrar link para fonte?',
+    'type'  => 'boolean',
+    'data'  => 'int',
+    'width' => 'auto',
+    'writeParms' => ['label' => 'yesno'],
+    'help' => 'Se marcado, será incluído um link para a fonte original no final da notícia.'
+],    
                 'options' => [
                     'title' => LAN_OPTIONS,
                     'type' => null,
@@ -830,8 +852,9 @@ class news_fetch_import_ui extends e_admin_ui
         $selected = array_keys($_POST['import'] ?? []);
         $count = 0;
 
-        require_once(e_PLUGIN.'news_fetch/e_cron.php');
-        $cron = new news_fetch_cron;
+//        require_once(e_PLUGIN.'news_fetch/e_cron.php');
+        require_once(e_PLUGIN . 'news_fetch/handlers/news_fetch_class.php');
+//        $cron = new news_fetch_helper;
 //        $cron->news_fetch();
 
 //VAr_dump($selected);
@@ -845,7 +868,7 @@ if (empty($row)) continue;
 //                $url = $row['src_url'];
 //                $cat = $row['src_cat'];
             
-                if ($cron->news_fetch($row[0])) {
+                if ((new news_fetch_helper)->news_fetch($row[0])) {
                     $count++;
                 }
         }
@@ -1275,7 +1298,7 @@ JS);
     public function beforeCreate($new_data, $old_data)
     {
         // força manual scrape
-        require_once(e_PLUGIN . 'news_fetch/e_cron.php');
+//        require_once(e_PLUGIN . 'news_fetch/e_cron.php');
         require_once(e_PLUGIN . 'news_fetch/handlers/news_fetch_class.php');
 
         $row = [
@@ -1291,7 +1314,7 @@ JS);
 //        $runner = new news_fetch_cron;
 
 
-        if (!empty($result = (new news_fetch_cron)->news_fetch($row))){
+        if (!empty($result = (new news_fetch_helper)->news_fetch($row))){
             if ($result['type'] === 'news') {
                 $url = e_ADMIN."newspost.php?action=edit&id={$result['id']}";
             } else {
