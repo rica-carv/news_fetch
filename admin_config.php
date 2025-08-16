@@ -261,7 +261,8 @@ class news_fetch_admin_ui extends e_admin_ui
             'title' => 'Usar fallback via e_module.php',
             'type'  => 'boolean',
             'data'  => 'int',
-            'help'  => 'Se ativado, permite que o plugin corra via e_module.php caso o cron do servidor não esteja ativo.'
+            'help'  => 'Se ativado, permite que o plugin corra via e_module.php caso o cron do servidor não esteja ativo.',
+            'writeParms' => ['label' => 'yesno']
         ],
         'cron_interval' => [
             'title' => 'Intervalo do cron (segundos)',
