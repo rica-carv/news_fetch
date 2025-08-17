@@ -28,8 +28,10 @@ $lastRun = (int) (e107::getDb()->retrieve('news_fetch', 'MAX(src_last_run) AS la
 //var_dump($lastRun); // Tempo mínimo entre execuções (em segundos)
 //var_dump(time() - $lastRun); // Tempo mínimo entre execuções (em segundos)
 //var_dump(time() - $lastRun > 86400); // Tempo mínimo entre execuções (em segundos)
+//var_dump (e107::pref('news_fetch', 'cron_interval')??86400); // Tempo mínimo entre execuções (em segundos)
+//var_dump (time() - $lastRun > (e107::pref('news_fetch', 'cron_interval')??86400)); // Tempo mínimo entre execuções (em segundos)
 
-if (time() - $lastRun > 86400) { // Tempo mínimo entre execuções (em segundos)
+if (time() - $lastRun > (e107::pref('news_fetch', 'cron_interval')??86400)) { // Tempo mínimo entre execuções (em segundos)
 //    require_once(e_PLUGIN . 'news_fetch/e_cron.php'); // Reutiliza a mesma classe cron
     // Atualiza a preferência com o novo timestamp
     //    $pref->set(NEWSFETCH_PREF_KEY, time());

@@ -267,7 +267,7 @@ class news_fetch_admin_ui extends e_admin_ui
         'cron_interval' => [
             'title' => 'Intervalo do cron (segundos)',
             'type'  => 'number',
-            'help'  => 'Intervalo em segundos entre execuções do cron (por ex. 3600 para 1 hora)',
+            'help'  => 'Intervalo em segundos entre execuções do cron (por ex. 3600 para 1 hora, 86400 para 1 dia, etc.)',
             'writeParms' => ['pattern' => '[0-9]+']
         ],
     ];
@@ -418,7 +418,7 @@ class news_fetch_admin_ui extends e_admin_ui
     protected $fields      = [];
 
 //    protected $fieldpref = ['src_name', 'src_url', 'src_cat', 'src_active', 'src_xpath_link', 'src_xpath_title', 'src_xpath_body', 'src_xpath_img', 'src_img2media'];
-    protected $fieldpref = ['src_name', 'src_url', 'src_cat', 'src_active', 'src_submit_pending', 'src_last_run', 'src_last_date'];
+    protected $fieldpref = ['src_name', 'src_url', 'src_cat', 'src_active', 'src_submit_pending', 'src_last_run', 'src_last_insert', 'src_last_date'];
     
     public function __construct($request, $response)
     {
@@ -509,6 +509,13 @@ class news_fetch_admin_ui extends e_admin_ui
 */
 // No init() ou no array de $this->fields, altera assim:
 'src_last_run' => [
+    'title'   => 'Última Data Executado',
+    'type'    => 'method',
+    'width'   => 'auto',
+    'thclass' => 'center',
+    'class'   => 'left'
+],
+'src_last_insert' => [
     'title'   => 'Ultima importação',
     'type'    => 'method',
     'width'   => 'auto',
@@ -723,15 +730,14 @@ public function onUpdateError($new_data, $old_data, $id)
 }
 class news_fetch_form_ui extends e_admin_form_ui
     {
-        public function src_last_run($curVal,$mode)
+        private function format_date($Datevalue)
         {
-        //    $tp = e107::getParser();
-        
-            $lastRun = !empty($curVal)
-                ? e107::getParser()->toDate($curVal, 'short')
+
+            $Date = !empty($Datevalue)
+                ? e107::getParser()->toDate($Datevalue, 'short')
                 : 'Nunca';
         
-            $age = !empty($curVal) ? (time() - $curVal) : null;
+            $age = !empty($Datevalue) ? (time() - $Datevalue) : null;
 
 /*            
             Human-readable time 	Seconds
@@ -756,10 +762,19 @@ class news_fetch_form_ui extends e_admin_form_ui
             }
         
             return "<span class='{$colorClass}' style='white-space:nowrap;'>
-                        <i class='fa {$iconClass}' aria-hidden='true'></i> {$lastRun}
+                        <i class='fa {$iconClass}' aria-hidden='true'></i> {$Date}
                     </span>";
+
+        }
+            public function src_last_insert($curVal,$mode)
+        {
+            return $this->format_date($curVal);
         }
         
+            public function src_last_run($curVal,$mode)
+        {
+            return $this->format_date($curVal);
+        }
         public function src_last_date($curVal,$mode)
         {
         //    $tp = e107::getParser();

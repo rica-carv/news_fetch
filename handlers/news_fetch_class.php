@@ -188,8 +188,14 @@ public static function parseDate($rawDate)
     public function news_fetch($rowdata = null)
     {
         $rows = $rowdata ? array($rowdata) : $this->db->retrieve('news_fetch', '*', 'src_active=1', true);
-
+//        var_dump($rows);
         foreach ($rows as $row) {
+            $this->db->update(
+                'news_fetch',
+                "src_last_run=" . time() . "  
+                WHERE id=" . (int)$row['id']
+            );
+//                    var_dump($row['id']);
             if (self::is_rss($row['src_url'])) {
                 $content = self::fetch_url($row['src_url']);
                 if (!$content) {
@@ -365,8 +371,8 @@ if ($importType === 0) {
         if ($idCriado = $this->db->insert($table, $news)) {
             $this->db->update(
                 'news_fetch',
-                "src_last_url='{$row['fullUrl']}', 
-                 src_last_run=" . time() . ", 
+                "src_last_url='{$row['fullUrl']}',
+                 src_last_insert=" . time() . ", 
                  src_last_date=" . intval($row['datestamp']) . "
                  WHERE id=" . (int)$row['id']
             );
